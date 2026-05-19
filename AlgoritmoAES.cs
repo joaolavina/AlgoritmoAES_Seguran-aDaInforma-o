@@ -67,6 +67,14 @@ public class AlgoritmoAES
         }
     }
 
-    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo) { }
+    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo)
+    {
+        byte[,] matrizEstado = Util.CriarMatriz(chave);
+
+        
+    }
+
+
+
     public static void Descriptografar(string arquivoEntrada, byte[] chave, int modo) { }
 }
