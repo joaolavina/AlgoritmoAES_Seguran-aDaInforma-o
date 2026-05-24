@@ -2,11 +2,11 @@ public static class ExpansaoChave
 {
     public static byte[][] ExpandirChave(byte[] chave)
     {
-        byte[,] matrizEstado = Util.CriarMatriz(chave);
+        byte[,] matrizChave = Util.CriarMatriz(chave);
         byte[][] keySchedule = new byte[44][];
 
         for (int i = 0; i < 4; i++)
-            keySchedule[i] = Util.GetPalavraColuna(matrizEstado, i);
+            keySchedule[i] = Util.GetPalavraColuna(matrizChave, i);
 
 
         for (int i = 4; i < 44; i++)

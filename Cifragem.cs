@@ -66,7 +66,7 @@ public static class Cifragem
             {
                 byte valor = 0;
                 for (int k = 0; k < 4; k++)
-                    valor ^= MultiplicarGalois(matrizMult[lin, k], estado[k, col]);
+                    valor ^= Util.MultiplicarGalois(matrizMult[lin, k], estado[k, col]);
                 resultado[lin, col] = valor;
             }
 

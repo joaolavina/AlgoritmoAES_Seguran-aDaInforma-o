@@ -40,12 +40,6 @@ public static class SBox
         { 0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D }
     };
 
-    public static byte SubstituirInverso(byte valor)
-    {
-        int linha = (valor >> 4) & 0x0F;
-        int coluna = valor & 0x0F;
-        return TabelaInversa[linha, coluna];
-    }
     public static byte Substituir(byte valor)
     {
         int linha = (valor >> 4) & 0x0F;

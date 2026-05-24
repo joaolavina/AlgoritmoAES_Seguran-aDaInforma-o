@@ -5,21 +5,21 @@ public static class Decifragem
         byte[,] estado = Util.CriarMatriz(bloco);
 
         // etapa 1 — rodada 10
-        estado = Utils.AddRoundKey(estado, keySchedule, 10);
+        estado = Util.AddRoundKey(estado, keySchedule, 10);
         estado = InvShiftRows(estado);
         estado = InvSubBytes(estado);
 
         // rodadas 9 a 1
         for (int rodada = 9; rodada >= 1; rodada--)
         {
-            estado = Utils.AddRoundKey(estado, keySchedule, rodada);
+            estado = Util.AddRoundKey(estado, keySchedule, rodada);
             estado = InvMixColumns(estado);
             estado = InvShiftRows(estado);
             estado = InvSubBytes(estado);
         }
 
         // rodada final
-        estado = Utils.AddRoundKey(estado, keySchedule, 0);
+        estado = Util.AddRoundKey(estado, keySchedule, 0);
 
         return Util.MatrizParaBytes(estado);
     }
