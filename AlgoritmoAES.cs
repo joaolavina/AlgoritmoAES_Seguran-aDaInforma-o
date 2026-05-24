@@ -3,14 +3,15 @@ public class AlgoritmoAES
     static void Main(string[] args)
     {
         int opcaoCriptografia = LerOpcao("Selecione a opção desejada:\n1 - Criptografar\n2 - Descriptografar", 1, 2);
-        int opcaoModo        = LerOpcao("Selecione o modo de operação:\n1 - ECB\n2 - CBC", 1, 2);
-        byte[] chave         = LerChave();
+        int opcaoModo = LerOpcao("Selecione o modo de operação:\n1 - ECB\n2 - CBC", 1, 2);
+        byte[] chave = LerChave();
+        byte[] iv = opcaoModo == 2 ? LerVetorInicializacao() : null;
         string arquivoEntrada = LerArquivo();
 
         if (opcaoCriptografia == 1)
-            Criptografar(arquivoEntrada, chave, opcaoModo);
+            Criptografar(arquivoEntrada, chave, opcaoModo, iv);
         else
-            Descriptografar(arquivoEntrada, chave, opcaoModo);
+            Descriptografar(arquivoEntrada, chave, opcaoModo, iv);
     }
 
     static int LerOpcao(string mensagem, int min, int max)
@@ -67,14 +68,59 @@ public class AlgoritmoAES
         }
     }
 
-    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo)
+    static byte[] LerVetorInicializacao()
     {
-        byte[,] matrizEstado = Util.CriarMatriz(chave);
+        while (true)
+        {
+            Console.Write("Digite o vetor de inicialização (16 valores decimais separados por vírgula): ");
+            string[] partes = Console.ReadLine().Split(',');
 
-        
+            if (partes.Length != 16)
+            {
+                Console.WriteLine("Tamanho inválido. O IV deve ter exatamente 16 valores.");
+                continue;
+            }
+
+            byte[] iv = new byte[16];
+            bool valido = true;
+
+            for (int i = 0; i < partes.Length; i++)
+            {
+                if (!byte.TryParse(partes[i].Trim(), out iv[i]))
+                {
+                    Console.WriteLine($"Valor inválido: '{partes[i].Trim()}'. Use números entre 0 e 255.");
+                    valido = false;
+                    break;
+                }
+            }
+
+            if (valido) return iv;
+        }
     }
 
+    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo, byte[] iv)
+    {
+        byte[] dados = File.ReadAllBytes(arquivoEntrada);
+        byte[][] keySchedule = ExpansaoChave.ExpandirChave(chave);
+        byte[] dadosCifrados = modo == 1
+            ? ECB.Cifrar(dados, keySchedule)
+            : CBC.Cifrar(dados, keySchedule, iv);
 
+        string arquivoSaida = arquivoEntrada + ".bin";
+        File.WriteAllBytes(arquivoSaida, dadosCifrados);
+        Console.WriteLine($"Arquivo cifrado salvo em: {arquivoSaida}");
+    }
 
-    public static void Descriptografar(string arquivoEntrada, byte[] chave, int modo) { }
+    public static void Descriptografar(string arquivoEntrada, byte[] chave, int modo, byte[] iv)
+    {
+        byte[] dados = File.ReadAllBytes(arquivoEntrada);
+        byte[][] keySchedule = ExpansaoChave.ExpandirChave(chave);
+        byte[] dadosDecifrados = modo == 1
+            ? ECB.Decifrar(dados, keySchedule)
+            : CBC.Decifrar(dados, keySchedule, iv);
+
+        string arquivoSaida = arquivoEntrada.Replace(".bin", "_decifrado");
+        File.WriteAllBytes(arquivoSaida, dadosDecifrados);
+        Console.WriteLine($"Arquivo decifrado salvo em: {arquivoSaida}");
+    }
 }
