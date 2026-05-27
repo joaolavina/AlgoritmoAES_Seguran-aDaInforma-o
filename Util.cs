@@ -23,21 +23,6 @@ public static class Util
         return [matriz[0, col], matriz[1, col], matriz[2, col], matriz[3, col]];
     }
 
-    public static byte[] GetPalavraLinha(byte[,] matriz, int lin)
-    {
-        return [matriz[lin, 0], matriz[lin, 1], matriz[lin, 2], matriz[lin, 3]];
-    }
-
-    public static void ImprimirMatriz(byte[,] matriz)
-    {
-        for (int lin = 0; lin < 4; lin++)
-        {
-            for (int col = 0; col < 4; col++)
-                Console.Write($"0x{matriz[lin, col]:X2} ");
-            Console.WriteLine();
-        }
-    }
-
     public static byte[,] AddRoundKey(byte[,] matrizEstado, byte[][] keySchedule, int rodada)
     {
         byte[,] resultado = new byte[4, 4];

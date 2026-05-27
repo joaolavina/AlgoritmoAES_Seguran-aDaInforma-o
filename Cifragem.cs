@@ -2,7 +2,6 @@ public static class Cifragem
 {
     public static byte[] CifrarBloco(byte[] bloco, byte[][] keySchedule)
     {
-        // monta a matriz de estado a partir do bloco de 16 bytes
         byte[,] matrizEstado = Util.CriarMatriz(bloco);
 
         // etapa 1 — rodada 0

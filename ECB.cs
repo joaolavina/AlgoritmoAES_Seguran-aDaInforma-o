@@ -26,7 +26,6 @@ public static class ECB
             resultado.AddRange(blocoDecifrado);
         }
 
-        // remove padding do último bloco
-        return Padding.Remover(resultado.ToArray());
+        return Padding.Remover([.. resultado]);
     }
 }

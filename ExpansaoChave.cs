@@ -38,13 +38,13 @@ public static class ExpansaoChave
 
     private static byte[] SubWord(byte[] palavra)
     {
-        return new byte[]
-        {
+        return
+        [
             SBox.Substituir(palavra[0]),
             SBox.Substituir(palavra[1]),
             SBox.Substituir(palavra[2]),
             SBox.Substituir(palavra[3])
-        };
+        ];
     }
 
      private static byte[] XorPalavras(byte[] a, byte[] b)

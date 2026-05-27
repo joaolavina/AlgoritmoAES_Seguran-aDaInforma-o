@@ -17,7 +17,7 @@ public class AlgoritmoAES
                 int opcaoModo = LerOpcao("Selecione o modo de operação:\n1 - ECB\n2 - CBC", 1, 2);
 
                 byte[] chave = LerChave();
-                byte[] iv = opcaoModo == 2 ? LerVetorInicializacao() : null;
+                byte[] iv = opcaoModo == 2 ? LerVetorInicializacao() : [];
                 string arquivoEntrada = LerArquivo();
                 string nomeArquivoSaida = LerNomeArquivo();
 
@@ -51,7 +51,8 @@ public class AlgoritmoAES
         while (true)
         {
             Console.Write("Digite a chave (16 valores decimais separados por vírgula): ");
-            string[] partes = Console.ReadLine().Split(',');
+            string? input = Console.ReadLine();
+            string[] partes = input?.Split(',') ?? [];
 
             if (partes.Length != 16)
             {
@@ -81,7 +82,9 @@ public class AlgoritmoAES
         while (true)
         {
             Console.Write("Digite o caminho do arquivo de entrada: ");
-            string caminho = Console.ReadLine();
+
+            string? input = Console.ReadLine();
+            string caminho = input ?? string.Empty;
 
             if (File.Exists(caminho)) return caminho;
 
@@ -94,11 +97,12 @@ public class AlgoritmoAES
         while (true)
         {
             Console.Write("Digite o nome do arquivo de saída: ");
-            string nome = Console.ReadLine().Trim();
+            string? input = Console.ReadLine();
+            string nome = input ?? string.Empty;
 
-            string[] Reservados = { "CON","PRN","AUX","NUL",
+            string[] Reservados = [ "CON","PRN","AUX","NUL",
                 "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9",
-                "LPT1","LPT2","LPT3","LPT4","LPT5","LPT6","LPT7","LPT8","LPT9" };
+                "LPT1","LPT2","LPT3","LPT4","LPT5","LPT6","LPT7","LPT8","LPT9" ];
 
             var erro = string.IsNullOrWhiteSpace(nome) ? "Nome não pode ser vazio" :
                         nome.Any(c => Path.GetInvalidFileNameChars().Contains(c)) ? "Nome contém caracteres inválidos." :
@@ -117,7 +121,8 @@ public class AlgoritmoAES
         while (true)
         {
             Console.Write("Digite o vetor de inicialização (16 valores decimais separados por vírgula): ");
-            string[] partes = Console.ReadLine().Split(',');
+            string? input = Console.ReadLine();
+            string[] partes = input?.Split(',') ?? [];
 
             if (partes.Length != 16)
             {
