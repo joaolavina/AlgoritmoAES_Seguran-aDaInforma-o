@@ -15,14 +15,7 @@ public static class Padding
 
     public static byte[] Remover(byte[] dados)
     {
-        try
-        {
-            int padding = dados[dados.Length - 1];
-            return dados[0..(dados.Length - padding)];
-        }
-        catch
-        {
-            throw new Exception("Não foi possível descriptografar o arquivo. O arquivo pode estar corrompido, a chave/IV podem estar incorretos ou você está utilizando o tipo de criptografia errado.");
-        }
+        int padding = dados[dados.Length - 1];
+        return dados[0..(dados.Length - padding)];
     }
 }

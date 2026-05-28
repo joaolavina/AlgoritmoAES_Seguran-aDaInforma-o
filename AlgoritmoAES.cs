@@ -2,44 +2,25 @@ public class AlgoritmoAES
 {
     static void Main(string[] args)
     {
-        while (true)
-        {
-            try
-            {
-                int opcaoCriptografia = LerOpcao("Selecione a opção desejada:\n1 - Criptografar\n2 - Descriptografar\n3 - Encerrar sessão", 1, 3);
+        int opcaoCriptografia = LerOpcao("Selecione a opção desejada:\n1 - Criptografar\n2 - Descriptografar", 1, 2);
+        int opcaoModo = LerOpcao("Selecione o modo de operação:\n1 - ECB\n2 - CBC", 1, 2);
 
-                if (opcaoCriptografia == 3)
-                {
-                    Console.WriteLine("Sessão encerrada...");
-                    return;
-                }
+        byte[] chave = LerChave();
+        byte[]? iv = opcaoModo == 2 ? LerVetorInicializacao() : null;
+        string arquivoEntrada = LerArquivo();
+        string nomeArquivoSaida = LerNomeArquivo();
 
-                int opcaoModo = LerOpcao("Selecione o modo de operação:\n1 - ECB\n2 - CBC", 1, 2);
-
-                byte[] chave = LerChave();
-                byte[] iv = opcaoModo == 2 ? LerVetorInicializacao() : [];
-                string arquivoEntrada = LerArquivo();
-                string nomeArquivoSaida = LerNomeArquivo();
-
-                if (opcaoCriptografia == 1)
-                    Criptografar(arquivoEntrada, chave, opcaoModo, iv, nomeArquivoSaida);
-                else
-                    Descriptografar(arquivoEntrada, chave, opcaoModo, iv, nomeArquivoSaida);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-        }
+        if (opcaoCriptografia == 1)
+            Criptografar(arquivoEntrada, chave, opcaoModo, iv, nomeArquivoSaida);
+        else
+            Descriptografar(arquivoEntrada, chave, opcaoModo, iv, nomeArquivoSaida);
     }
 
     static int LerOpcao(string mensagem, int min, int max)
     {
         while (true)
         {
-            Console.WriteLine("\n-----------------------------");
             Console.WriteLine(mensagem);
-            Console.WriteLine("-----------------------------");
             if (int.TryParse(Console.ReadLine(), out int opcao) && opcao >= min && opcao <= max)
                 return opcao;
             Console.WriteLine("Opção inválida. Tente novamente.");
@@ -98,16 +79,16 @@ public class AlgoritmoAES
         {
             Console.Write("Digite o nome do arquivo de saída: ");
             string? input = Console.ReadLine();
-            string nome = input ?? string.Empty;
+            string nome = input?.Trim() ?? string.Empty;
 
-            string[] Reservados = [ "CON","PRN","AUX","NUL",
+            string[] reservados = { "CON","PRN","AUX","NUL",
                 "COM1","COM2","COM3","COM4","COM5","COM6","COM7","COM8","COM9",
-                "LPT1","LPT2","LPT3","LPT4","LPT5","LPT6","LPT7","LPT8","LPT9" ];
+                "LPT1","LPT2","LPT3","LPT4","LPT5","LPT6","LPT7","LPT8","LPT9" };
 
             var erro = string.IsNullOrWhiteSpace(nome) ? "Nome não pode ser vazio" :
                         nome.Any(c => Path.GetInvalidFileNameChars().Contains(c)) ? "Nome contém caracteres inválidos." :
-                        Reservados.Contains(Path.GetFileNameWithoutExtension(nome).ToUpper()) ? "Nome reservado pelo sistema." :
-                        nome.Length > 255 ? "Nome muito longo (deve ser menor que 255 caractéres)." :
+                        reservados.Contains(Path.GetFileNameWithoutExtension(nome).ToUpper()) ? "Nome reservado pelo sistema." :
+                        nome.Length > 255 ? "Nome muito longo (deve ser menor que 255 caracteres)." :
                         nome.EndsWith(".") ? "Não pode terminar com '.'" :
                         null;
 
@@ -147,7 +128,7 @@ public class AlgoritmoAES
         }
     }
 
-    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo, byte[] iv, string nomeArquivoSaida)
+    public static void Criptografar(string arquivoEntrada, byte[] chave, int modo, byte[]? iv, string nomeArquivoSaida)
     {
         byte[] dados = File.ReadAllBytes(arquivoEntrada);
         byte[][] keySchedule = ExpansaoChave.ExpandirChave(chave);
@@ -155,19 +136,13 @@ public class AlgoritmoAES
             ? ECB.Cifrar(dados, keySchedule)
             : CBC.Cifrar(dados, keySchedule, iv);
 
-        var diretorio = "C:\\ArquivosCriptografadosAES";
-
-        if (!Directory.Exists(diretorio))
-            Directory.CreateDirectory(diretorio);
-
-        string arquivoSaida = Path.Combine(diretorio, nomeArquivoSaida + ".bin");
-        if (!File.Exists(arquivoSaida))
-            File.Create(arquivoSaida).Close();
+        string diretorioSaida = Path.GetDirectoryName(arquivoEntrada) ?? Directory.GetCurrentDirectory();
+        string arquivoSaida = Path.Combine(diretorioSaida, Path.GetFileNameWithoutExtension(nomeArquivoSaida) + ".bin");
         File.WriteAllBytes(arquivoSaida, dadosCifrados);
         Console.WriteLine($"Arquivo cifrado salvo em: {arquivoSaida}");
     }
 
-    public static void Descriptografar(string arquivoEntrada, byte[] chave, int modo, byte[] iv, string nomeArquivoSaida)
+    public static void Descriptografar(string arquivoEntrada, byte[] chave, int modo, byte[]? iv, string nomeArquivoSaida)
     {
         byte[] dados = File.ReadAllBytes(arquivoEntrada);
         byte[][] keySchedule = ExpansaoChave.ExpandirChave(chave);
@@ -175,7 +150,8 @@ public class AlgoritmoAES
             ? ECB.Decifrar(dados, keySchedule)
             : CBC.Decifrar(dados, keySchedule, iv);
 
-        string arquivoSaida = Path.Combine("C:\\ArquivosCriptografadosAES", nomeArquivoSaida + ".decifrado");
+        string diretorioSaida = Path.GetDirectoryName(arquivoEntrada) ?? Directory.GetCurrentDirectory();
+        string arquivoSaida = Path.Combine(diretorioSaida, Path.GetFileNameWithoutExtension(nomeArquivoSaida) + ".txt");
         File.WriteAllBytes(arquivoSaida, dadosDecifrados);
         Console.WriteLine($"Arquivo decifrado salvo em: {arquivoSaida}");
     }
