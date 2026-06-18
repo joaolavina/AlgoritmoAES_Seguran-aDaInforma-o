@@ -1,11 +1,10 @@
 public static class CBC
 {
-    public static byte[] Cifrar(byte[] dados, byte[][] keySchedule, byte[] iv)
+    public static byte[] Cifrar(byte[] dados, byte[][] keySchedule, byte[]? iv)
     {
         byte[] dadosComPadding = Padding.Adicionar(dados);
         List<byte> resultado   = [];
-        byte[] blocoAnterior   = iv;
-
+        byte[] blocoAnterior   = iv ?? [];
         for (int i = 0; i < dadosComPadding.Length; i += 16)
         {
             byte[] bloco   = dadosComPadding[i..(i + 16)];
@@ -22,10 +21,10 @@ public static class CBC
         return resultado.ToArray();
     }
 
-    public static byte[] Decifrar(byte[] dados, byte[][] keySchedule, byte[] iv)
+    public static byte[] Decifrar(byte[] dados, byte[][] keySchedule, byte[]? iv)
     {
         List<byte> resultado = [];
-        byte[] blocoAnterior = iv; 
+        byte[] blocoAnterior = iv ?? []; 
 
         for (int i = 0; i < dados.Length; i += 16)
         {
