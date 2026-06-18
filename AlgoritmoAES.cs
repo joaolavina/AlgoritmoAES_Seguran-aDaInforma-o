@@ -150,8 +150,10 @@ public class AlgoritmoAES
             ? ECB.Decifrar(dados, keySchedule)
             : CBC.Decifrar(dados, keySchedule, iv);
 
-        string diretorioSaida = Path.GetDirectoryName(arquivoEntrada) ?? Directory.GetCurrentDirectory();
-        string arquivoSaida = Path.Combine(diretorioSaida, Path.GetFileNameWithoutExtension(nomeArquivoSaida) + ".txt");
+        string arquivoSaida = Path.IsPathRooted(nomeArquivoSaida)
+            ? nomeArquivoSaida
+            : Path.Combine(Path.GetDirectoryName(arquivoEntrada) ?? Directory.GetCurrentDirectory(), nomeArquivoSaida);
+        
         File.WriteAllBytes(arquivoSaida, dadosDecifrados);
         Console.WriteLine($"Arquivo decifrado salvo em: {arquivoSaida}");
     }
